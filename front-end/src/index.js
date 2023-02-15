@@ -5,7 +5,7 @@ import "index.css"
 import StaffApp from "staff-app/app"
 import { GlobalStyle } from "shared/styles/global-style"
 
-const Home: React.FC = () => {
+const Home = () => {
   return (
     <div className="app">
       <header className="app-header">

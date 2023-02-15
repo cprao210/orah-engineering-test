@@ -10,21 +10,21 @@ import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 
-export const HomeBoardPage: React.FC = () => {
+export const HomeBoardPage = () => {
   const [isRollMode, setIsRollMode] = useState(false)
-  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+  const [getStudents, data, loadState] = useApi({ url: "get-homeboard-students" })
 
   useEffect(() => {
     void getStudents()
   }, [getStudents])
 
-  const onToolbarAction = (action: ToolbarAction) => {
+  const onToolbarAction = (action) => {
     if (action === "roll") {
       setIsRollMode(true)
     }
   }
 
-  const onActiveRollAction = (action: ActiveRollAction) => {
+  const onActiveRollAction = (action) => {
     if (action === "exit") {
       setIsRollMode(false)
     }
@@ -60,11 +60,7 @@ export const HomeBoardPage: React.FC = () => {
   )
 }
 
-type ToolbarAction = "roll" | "sort"
-interface ToolbarProps {
-  onItemClick: (action: ToolbarAction, value?: string) => void
-}
-const Toolbar: React.FC<ToolbarProps> = (props) => {
+const Toolbar = (props) => {
   const { onItemClick } = props
   return (
     <S.ToolbarContainer>
