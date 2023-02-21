@@ -27,6 +27,7 @@ export const HomeBoardPage: React.FC = () => {
   const arr=useSelector(state=>(state.DailyActivityReducer))
 
   useEffect(() => {
+    
     void getStudents()
   }, [getStudents])
 
@@ -39,10 +40,17 @@ export const HomeBoardPage: React.FC = () => {
   
 
 
-  const filteredStudents = data?.students.filter((s) => {
+  const filteredStudents = arr?.studentsArr.map((s) => {
+   
+    
     const name = `${s.first_name} ${s.last_name}`
-    return name.toLowerCase().includes(searchTerm.toLowerCase())
+    if( name.toLowerCase().includes(searchTerm.toLowerCase())){
+      return {...s,activeStatus:true}
+    }else{
+      return {...s,activeStatus:false}
+    }
   })
+  
   
   
 
@@ -84,30 +92,31 @@ export const HomeBoardPage: React.FC = () => {
   }
 
   useEffect(() => {
-  // console.log(sortedStudents);
-  
+    dispatch({ type: actions.SET_NEW_STUDENT_ARR, data: sortedStudents });
+  }, [searchTerm, sortedBy, sortOrder]);
 
-  
-  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:sortedStudents})
-  
-  }, [searchTerm])
-  useEffect(() => {
-  
-  
-    console.log(sortedStudents,'sortedBy');
-  
-  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:sortedStudents})
-  
-  }, [sortedBy])
-  useEffect(() => {
+  const sortOnRollState=(state:any,arr:any)=>{
+    
+    
+    const newArr=arr.map((d:any)=>{
 
+      
+      if(state==='all'){
+      return{...d,activeStatus:true,rollState:d.rollState}}
+      else if (d.rollState===state){
+        console.log(d.rollState===state,d.rollState,state);
+        
+        return{...d,activeStatus:true,rollState:d.rollState}
+      } else{
+        
+        return{...d,activeStatus:false,rollState:d.rollState}
+      }
+    })
   
-
-  console.log(sortedStudents,'sordOrder');
+  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr})
   
-  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:sortedStudents})
   
-  }, [sortOrder])
+   }
 
 
 
@@ -123,7 +132,6 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
-console.log(arr);
 
 
 
@@ -145,9 +153,11 @@ console.log(arr);
 
         {loadState === "loaded" && (
           <>
-            {arr&&arr.studentsArr&&arr.studentsArr.map((s) => (
-            s.activeStatus&&  <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
-            ))}
+            {arr&&arr.studentsArr&&arr.studentsArr.map((s,i,arr) => {
+              
+
+           return  s.activeStatus&&  <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+})}
           </>
         )}
 
@@ -157,7 +167,7 @@ console.log(arr);
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} stateChangeHandler={sortOnRollState} />
     </>
   )
 }

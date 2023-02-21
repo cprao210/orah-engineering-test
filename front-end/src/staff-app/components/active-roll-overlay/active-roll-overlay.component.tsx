@@ -12,10 +12,11 @@ export type ActiveRollAction = "filter" | "exit"
 interface Props {
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
+  stateChangeHandler: (state:any,arr:any) => void
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { isActive, onItemClick } = props
+  const { isActive, onItemClick,stateChangeHandler } = props
   const arr=useSelector(state=>(state.DailyActivityReducer))
   const dispatch = useDispatch()
   const [stateList, setStateList] = useState([
@@ -28,9 +29,8 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const [getactivity, data1, loadState1] = useApi<{ students: Person[] }>({ url: "get-activities" })
 
  
+console.log(data1);
 
- console.log( data, loadState,' data, loadState');
- console.log( data1, loadState1,' data1, loadState1');
  
   
 
@@ -98,7 +98,7 @@ dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr})
         <div>
           <RollStateList
             stateList={stateList}
-            onItemClick={sortOnRollState}
+            onItemClick={stateChangeHandler}
           />
           <div style={{ marginTop: Spacing.u6 }}>
             <Button color="inherit" onClick={() => onItemClick("exit")}>
