@@ -4,18 +4,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
 import { Spacing, FontWeight } from "shared/styles/styles"
 import { RolllStateType } from "shared/models/roll"
-
+import { useSelector } from "react-redux";
 interface Props {
   stateList: StateList[]
   onItemClick?: (type: ItemType) => void
   size?: number
 }
 export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
-  const onClick = (type: ItemType) => {
+  const onClick = (type: ItemType,arr:any) => {
     if (onItemClick) {
-      onItemClick(type)
+      onItemClick(type,arr)
     }
   }
+  const arr=useSelector(state=>(state.DailyActivityReducer.studentsArr))
+  console.log(arr);
+  
 
   return (
     <S.ListContainer>
@@ -23,7 +26,10 @@ export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemCli
         if (s.type === "all") {
           return (
             <S.ListItem key={i}>
-              <FontAwesomeIcon icon="users" size="sm" style={{ cursor: "pointer" }} onClick={() => onClick(s.type)} />
+              <FontAwesomeIcon icon="users" size="sm" style={{ cursor: "pointer" }} onClick={() =>{ 
+                console.log(s.type);
+                
+                onClick(s.type,arr)}} />
               <span>{s.count}</span>
             </S.ListItem>
           )
@@ -31,7 +37,7 @@ export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemCli
 
         return (
           <S.ListItem key={i}>
-            <RollStateIcon type={s.type} size={size} onClick={() => onClick(s.type)} />
+            <RollStateIcon type={s.type} size={size} onClick={() => onClick(s.type,arr)} />
             <span>{s.count}</span>
           </S.ListItem>
         )
