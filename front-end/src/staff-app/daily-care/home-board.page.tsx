@@ -13,68 +13,57 @@ import ShortDropdown from "staff-app/components/ShortDropdown/index"
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from "./store/action"
 
-export const HomeBoardPage: React.FC = () => {
-  const [isRollMode, setIsRollMode] = useState(false)
-  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+import { BsCheckCircle } from "react-icons/bs";
 
-  const [sortedBy, setSortedBy] = useState<"firstName" | "lastName">("firstName")
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [students, setStudents] = useState([])
+export const HomeBoardPage: React.FC = () => {
+  const [isRollMode, setIsRollMode] = useState<boolean>(false);
+  const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" });
+  const [sortedBy, setSortedBy] = useState<"firstName" | "lastName">("firstName");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  interface State {
+    DailyActivityReducer: {
+      studentsArr: Person[],
+    },
+  }
 
 	const dispatch = useDispatch();
-
-  const arr=useSelector(state=>(state.DailyActivityReducer))
+  const arr = useSelector((state: State) => state.DailyActivityReducer);
 
   useEffect(() => {
-    
     void getStudents()
   }, [getStudents])
 
   useEffect(() => {
     if(data?.students){
       const newArr=data?.students.map((s,i)=>({...s,activeStatus:true}))
-      dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr})
+      dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,mark:'loadState'})
     }
-  }, [loadState])
-  
+  }, [loadState]);
 
-
-  const filteredStudents = arr?.studentsArr.map((s) => {
-   
-    
+  const filteredStudents = arr?.studentsArr.map((s:Person) => {
     const name = `${s.first_name} ${s.last_name}`
     if( name.toLowerCase().includes(searchTerm.toLowerCase())){
       return {...s,activeStatus:true}
     }else{
       return {...s,activeStatus:false}
     }
-  })
-  
-  
-  
+  });
 
-  const sortedStudents = filteredStudents?.sort((a, b) => {
-    const sortFieldA = sortedBy === "firstName" ? a.first_name : a.last_name
-    const sortFieldB = sortedBy === "firstName" ? b.first_name : b.last_name
+  const sortedStudents = filteredStudents?.sort((a: Person, b: Person) => {
+    const sortFieldA = sortedBy === 'firstName' ? a.first_name : a.last_name;
+    const sortFieldB = sortedBy === 'firstName' ? b.first_name : b.last_name;
 
-    if (sortOrder === "asc") {
-      
-      return sortFieldA.localeCompare(sortFieldB)
+    if (sortOrder === 'asc') {
+      return sortFieldA.localeCompare(sortFieldB);
     } else {
-      return sortFieldB.localeCompare(sortFieldA)
+      return sortFieldB.localeCompare(sortFieldA);
     }
-  })
-
- 
-  
+  });
 
 
-  
 
   const onToolbarAction = (action: ToolbarAction, value?: any) => {
- 
-    
     if (action === "sort") {
       if (sortedBy === value) {
         setSortOrder(sortOrder === "asc" ? "desc" : "asc")
@@ -83,28 +72,21 @@ export const HomeBoardPage: React.FC = () => {
         setSortOrder("asc")
       }
     } else if (action === "search") {
-  
-      
       setSearchTerm(value || "")
     } else if (action === "roll") {
       setIsRollMode(true)
     }
-  }
+  };
 
   useEffect(() => {
     dispatch({ type: actions.SET_NEW_STUDENT_ARR, data: sortedStudents });
   }, [searchTerm, sortedBy, sortOrder]);
 
-  const sortOnRollState=(state:any,arr:any)=>{
-    
-    
+  const sortOnRollState=(state:string,arr:Person[])=>{
     const newArr=arr.map((d:any)=>{
-
-      
-      if(state==='all'){
+      if(state==='all'){ 
       return{...d,activeStatus:true,rollState:d.rollState}}
       else if (d.rollState===state){
-        console.log(d.rollState===state,d.rollState,state);
         
         return{...d,activeStatus:true,rollState:d.rollState}
       } else{
@@ -112,19 +94,8 @@ export const HomeBoardPage: React.FC = () => {
         return{...d,activeStatus:false,rollState:d.rollState}
       }
     })
-  
-  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr})
-  
-  
-   }
-
-
-
-
-
-  
-
-  
+  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,mark:'sortOnRollState'})
+   };
 
   const onActiveRollAction = (action: ActiveRollAction) => {
     if (action === "exit") {
@@ -132,8 +103,13 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
+  const filteractiveStatusArr=(arr:any)=>{
 
+return arr.filter((d:any)=>{
+  return d.activeStatus
+})
 
+  }
 
   return (
     <>
@@ -153,13 +129,21 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && (
           <>
-            {arr&&arr.studentsArr&&arr.studentsArr.map((s,i,arr) => {
+            {arr&&arr.studentsArr&& filteractiveStatusArr(arr.studentsArr).map((s:any) => {
               
 
-           return  s.activeStatus&&  <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
-})}
+           return    <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+})} {
+  arr&&arr.studentsArr&& filteractiveStatusArr(arr.studentsArr).length===0&& <EmptyStateContainer>
+  <EmptyStateIcon>
+    <BsCheckCircle />
+  </EmptyStateIcon>
+  <p>Ooops! No results found</p>
+</EmptyStateContainer>
+}
           </>
         )}
+        
 
         {loadState === "error" && (
           <CenteredContainer>
@@ -206,9 +190,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
     <S.ToolbarContainer>
       <div
       className="firstRow"
-        // onClick={() => onItemClick("sort", sortedBy === "firstName" ? "lastName" : "firstName")}
       >
-        Sort By  <span><ShortDropdown onItelick={onItemClick}/></span> (
+        Sort By  <span><ShortDropdown onItemClick={onItemClick}/></span> (
     <span className="sort_order" onClick={()=>handleSortToggle()}>   {sortOrder === "asc" ? "A-Z" : "Z-A"}</span> )
    
       </div>
@@ -223,6 +206,25 @@ const Toolbar: React.FC<ToolbarProps> = ({
     </S.ToolbarContainer>
   );
 };
+
+
+const EmptyStateContainer = styled.div`
+  margin: 2rem auto;
+  max-width: 800px;
+  text-align: center;
+  color: #808080;
+`;
+
+const EmptyStateIcon = styled.div`
+  margin-bottom: 1rem;
+  font-size: 3rem;
+  color: #c3c3c3;
+`;
+const SearchBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
 
 const S = {
   PageContainer: styled.div`

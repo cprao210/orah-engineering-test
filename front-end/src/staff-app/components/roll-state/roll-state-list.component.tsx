@@ -6,29 +6,26 @@ import { Spacing, FontWeight } from "shared/styles/styles"
 import { RolllStateType } from "shared/models/roll"
 import { useSelector } from "react-redux";
 interface Props {
-  stateList: StateList[]
-  onItemClick?: (type: ItemType) => void
+  stateListArr:any
+  onItemClick?: (type: ItemType,arr:any) => void
   size?: number
 }
-export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
+export const RollStateList: React.FC<Props> = ({ stateListArr, size = 14, onItemClick }) => {
   const onClick = (type: ItemType,arr:any) => {
     if (onItemClick) {
       onItemClick(type,arr)
     }
   }
-  const arr=useSelector(state=>(state.DailyActivityReducer.studentsArr))
-  console.log(arr);
-  
+  const arr=useSelector((state:any)=>(state.DailyActivityReducer.studentsArr))
+ 
 
   return (
     <S.ListContainer>
-      {stateList.map((s, i) => {
+      {stateListArr.map((s:any, i:any) => {
         if (s.type === "all") {
           return (
             <S.ListItem key={i}>
               <FontAwesomeIcon icon="users" size="sm" style={{ cursor: "pointer" }} onClick={() =>{ 
-                console.log(s.type);
-                
                 onClick(s.type,arr)}} />
               <span>{s.count}</span>
             </S.ListItem>

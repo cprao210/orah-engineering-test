@@ -4,7 +4,8 @@ import { Routes, Route } from "react-router-dom"
 import "shared/helpers/load-icons"
 import { Header } from "staff-app/components/header/header.component"
 import { HomeBoardPage } from "staff-app/daily-care/home-board.page"
-import { ActivityPage } from "staff-app/platform/activity.page"
+import { ActivityPage } from "./platform/activity.page"
+// import { ActivityPage } from "staff-app/platform/activity.page"
 import { store } from "./store"
 
 function App() {

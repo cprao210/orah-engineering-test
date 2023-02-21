@@ -14,8 +14,6 @@ export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: O
   const callApi = useCallback(
     async (params?: object) => {
       dispatch({ type: "loading" })
-console.log(params);
-
       function process(result: ApiResponse<ReturnType>) {
         if (result.success) {
           dispatch({ type: "success", result: result })
@@ -30,8 +28,6 @@ console.log(params);
         case "get-activities":
           return getActivities().then(process)
         case "save-roll":
-          console.log(params);
-          
           return saveActiveRoll(params as RollInput).then(process)
       }
     },

@@ -12,47 +12,36 @@ interface Props {
 export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark",studentTracker, size = 40, onStateChange }) => {
   const [rollState, setRollState] = useState(initialState)
   
-  const arr=useSelector(state=>(state.DailyActivityReducer))
+  const arr=useSelector((state:any)=>(state.DailyActivityReducer))
 
   const dispatch= useDispatch()
 
   const findindex=()=>{
-    const index = arr.studentsArr.findIndex((d,i)=>{
+    const index = arr.studentsArr.findIndex((d:any,i:any)=>{
       return d===studentTracker
     })
     return index;
-  }
-
-  useEffect(() => {
-   const index= findindex()
-
-
-const newArr=arr.studentsArr;
-newArr.splice(index,1,{...studentTracker,rollState:rollState})
-
-
-
-
-dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr})
-
-
-  }, [rollState])
- 
+  };
 
   const nextState = () => {
     const states: RolllStateType[] = ["present", "late", "absent"]
     if (rollState === "unmark" || rollState === "absent") return states[0]
     const matchingIndex = states.findIndex((s) => s === rollState)
     return matchingIndex > -1 ? states[matchingIndex + 1] : states[0]
-  }
+  };
 
   const onClick = () => {
     const next = nextState()
+    const index= findindex()
+    const newArr=arr.studentsArr;
+    newArr.splice(index,1,{...studentTracker,rollState:next})
+    dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,mark:'rollState'})
     setRollState(next)
     if (onStateChange) {
       onStateChange(next)
     }
-  }
+  };
+  
 
   return <RollStateIcon type={rollState} size={size} onClick={onClick} />
 }
