@@ -12,8 +12,15 @@ import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active
 import ShortDropdown from "staff-app/components/ShortDropdown/index"
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from "./store/action"
-
 import { BsCheckCircle } from "react-icons/bs";
+
+interface State {
+  StudentsList: {
+    studentsArr: Person[],
+  },
+}
+
+
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState<boolean>(false);
@@ -21,14 +28,10 @@ export const HomeBoardPage: React.FC = () => {
   const [sortedBy, setSortedBy] = useState<"firstName" | "lastName">("firstName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [searchTerm, setSearchTerm] = useState<string>('');
-  interface State {
-    DailyActivityReducer: {
-      studentsArr: Person[],
-    },
-  }
+
 
 	const dispatch = useDispatch();
-  const arr = useSelector((state: State) => state.DailyActivityReducer);
+  const StudentsList = useSelector((state: State) => state.StudentsList);
 
   useEffect(() => {
     void getStudents()
@@ -37,11 +40,11 @@ export const HomeBoardPage: React.FC = () => {
   useEffect(() => {
     if(data?.students){
       const newArr=data?.students.map((s,i)=>({...s,activeStatus:true}))
-      dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,mark:'loadState'})
+      dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,})
     }
   }, [loadState]);
 
-  const filteredStudents = arr?.studentsArr.map((s:Person) => {
+  const filteredStudents = StudentsList?.studentsArr.map((s:Person) => {
     const name = `${s.first_name} ${s.last_name}`
     if( name.toLowerCase().includes(searchTerm.toLowerCase())){
       return {...s,activeStatus:true}
@@ -82,20 +85,7 @@ export const HomeBoardPage: React.FC = () => {
     dispatch({ type: actions.SET_NEW_STUDENT_ARR, data: sortedStudents });
   }, [searchTerm, sortedBy, sortOrder]);
 
-  const sortOnRollState=(state:string,arr:Person[])=>{
-    const newArr=arr.map((d:any)=>{
-      if(state==='all'){ 
-      return{...d,activeStatus:true,rollState:d.rollState}}
-      else if (d.rollState===state){
-        
-        return{...d,activeStatus:true,rollState:d.rollState}
-      } else{
-        
-        return{...d,activeStatus:false,rollState:d.rollState}
-      }
-    })
-  dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,mark:'sortOnRollState'})
-   };
+ 
 
   const onActiveRollAction = (action: ActiveRollAction) => {
     if (action === "exit") {
@@ -103,7 +93,7 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
-  const filteractiveStatusArr=(arr:any)=>{
+  const filterActiveStatusArr=(arr:any)=>{
 
 return arr.filter((d:any)=>{
   return d.activeStatus
@@ -129,12 +119,12 @@ return arr.filter((d:any)=>{
 
         {loadState === "loaded" && (
           <>
-            {arr&&arr.studentsArr&& filteractiveStatusArr(arr.studentsArr).map((s:any) => {
+            {StudentsList&&StudentsList.studentsArr&& filterActiveStatusArr(StudentsList.studentsArr).map((s:any) => {
               
 
            return    <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
 })} {
-  arr&&arr.studentsArr&& filteractiveStatusArr(arr.studentsArr).length===0&& <EmptyStateContainer>
+  StudentsList&&StudentsList.studentsArr&& filterActiveStatusArr(StudentsList.studentsArr).length===0&& <EmptyStateContainer>
   <EmptyStateIcon>
     <BsCheckCircle />
   </EmptyStateIcon>
@@ -151,7 +141,7 @@ return arr.filter((d:any)=>{
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} stateChangeHandler={sortOnRollState} />
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction}  />
     </>
   )
 }

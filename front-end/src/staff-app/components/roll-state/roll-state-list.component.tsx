@@ -16,7 +16,7 @@ export const RollStateList: React.FC<Props> = ({ stateListArr, size = 14, onItem
       onItemClick(type,arr)
     }
   }
-  const arr=useSelector((state:any)=>(state.DailyActivityReducer.studentsArr))
+  const arr=useSelector((state:any)=>(state.StudentsList?.studentsArr))
  
 
   return (

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
-import { DailyActivityReducer } from 'staff-app/daily-care/store/reducer';
+import { StudentsList } from 'staff-app/daily-care/store/reducer';
 
 
-const combinedAppReducers=combineReducers({DailyActivityReducer:DailyActivityReducer})
+const combinedAppReducers=combineReducers({StudentsList:StudentsList})
 
 export default combinedAppReducers

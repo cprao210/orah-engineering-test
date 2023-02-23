@@ -6,7 +6,7 @@ import { getActivities } from "api/get-activities"
 import { saveActiveRoll } from "api/save-active-roll"
 
 interface Options {
-  url: Endpoint
+  url: Endpoint|string
   initialLoadState?: LoadState
 }
 export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: Options) {

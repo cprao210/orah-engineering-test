@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ShortDropdown = ({ onItemClick }) => {
   const classes = useStyles();
-  const [selectedValue, setSelectedValue] = useState("firstName"); // Use state to manage the selected dropdown value
+  const [selectedValue, setSelectedValue] = useState("firstName");
 
   
   const dropdownArr = [

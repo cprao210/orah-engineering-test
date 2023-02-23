@@ -1,28 +1,33 @@
-import React, { useEffect, useState } from "react"
-import styled from "styled-components"
-import Button from "@material-ui/core/Button"
-import { BorderRadius, Spacing } from "shared/styles/styles"
-import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
-import { RolllStateType } from "shared/models/roll"
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import Button from "@material-ui/core/Button";
+import { BorderRadius, Spacing } from "shared/styles/styles";
+import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component";
 import { useSelector,useDispatch } from "react-redux";
-import { actions } from "staff-app/daily-care/store/action"
-import { Person } from "shared/models/person"
-import { useApi } from "shared/hooks/use-api"
-import { useNavigate } from "react-router-dom"
+import { actions } from "staff-app/daily-care/store/action";
+import { Person } from "shared/models/person";
+import { useApi } from "shared/hooks/use-api";
+import { useNavigate } from "react-router-dom";
 export type ActiveRollAction = "filter" | "exit";
 
 interface Props {
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
-  stateChangeHandler: (state:any,arr:any) => void
 }
 
+const APIUrls = {
+  SAVE_ROLL: "save-roll",
+  GET_ACTIVITIES: "get-activities",
+};
 
-export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { isActive, onItemClick,stateChangeHandler } = props
-  const arr=useSelector((state:any)=>(state.DailyActivityReducer))
+export const ActiveRollOverlay: React.FC<Props> = ({
+  isActive,
+  onItemClick,
+}: Props) => {
+  const StudentsList = useSelector((state: any) => state.StudentsList);
   const dispatch = useDispatch();
-  const nevigate=useNavigate()
+  const navigate = useNavigate();
+
   const [stateList, setStateList] = useState([
     { type: "all", count: 0 },
     { type: "present", count: 0 },
@@ -31,36 +36,38 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
   ]);
   
   
-  const [saveRoll, rollsData, rollsLoadState] = useApi<{ students: Person[] }>({ url: "save-roll" });
-  const [getActivity, activityData, activityLoadState] = useApi<{ students: Person[] }>({ url: "get-activities" });
-
+ const [saveRoll, rollsData, rollsLoadState] = useApi<{ students: Person[] }>({
+    url: APIUrls.SAVE_ROLL,
+  });
+  const [
+    getActivity,
+    activityData,
+    activityLoadState,
+  ] = useApi<{ students: Person[] }>({ url: APIUrls.GET_ACTIVITIES });
 
   useEffect(() => {
-    if (arr.studentsArr) {
-      const presentCount = arr.studentsArr.filter((student: any) => student.rollState === 'present').length;
-      const lateCount = arr.studentsArr.filter((student: any) => student.rollState === 'late').length;
-      const absentCount = arr.studentsArr.filter((student: any) => student.rollState === 'absent').length;
+    if (StudentsList.studentsArr) {
+      const presentCount = StudentsList.studentsArr.filter((student: any) => student.rollState === 'present').length;
+      const lateCount = StudentsList.studentsArr.filter((student: any) => student.rollState === 'late').length;
+      const absentCount = StudentsList.studentsArr.filter((student: any) => student.rollState === 'absent').length;
 
       setStateList([
-        { type: "all", count: arr.studentsArr.length },
+        { type: "all", count: StudentsList.studentsArr.length },
         { type: "present", count: presentCount },
         { type: "late", count: lateCount },
         { type: "absent", count: absentCount },
       ]);
     }
-  }, [arr]);
+  }, [StudentsList]);
 
   useEffect(() => {
-    console.log(activityData);
-    
-    activityData&& nevigate('/staff/activity',{state:activityData})
+    activityData&& navigate('/staff/activity',{state:activityData})
   }, [activityData])
   
 
 
   
  const sortOnRollState = (state: any, arr: any) => {
-  console.log(arr,'arr');
   
   const newArr = arr.map((student: any) => {
     if (state === 'all' || student.rollState === state) {
@@ -68,15 +75,9 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
     }
     return { ...student, activeStatus: false ,rollState:student.rollState};
   });
-  console.log(newArr,'newArr');
-  console.log(arr.map((student: any) => {
-    if (state === 'all' || student.rollState === state) {
-      return { ...student, activeStatus: true ,rollState:student.rollState};
-    }
-    return { ...student, activeStatus: false ,rollState:student.rollState};
-  }),'newArr2');
+  ;
   
-  dispatch({ type: actions.UPDATE_STUDENT_ARR, data: [...newArr] });
+  dispatch({ type: actions.SET_NEW_STUDENT_ARR, data: [...newArr] });
 };
   return (
     <S.Overlay isActive={isActive}>
@@ -92,12 +93,12 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
               Exit
             </Button>
             <Button color="inherit" style={{ marginLeft: Spacing.u2 }} onClick={() => {
-              saveRoll(arr.studentsArr.map((d:any)=>{
+              saveRoll(StudentsList.studentsArr.map((d:any)=>{
                 return {student_id:d.id,roll_state:d.rollState?d.rollState:'unmark'}
-              })).then((d)=>{
-                
-              }).then(()=>{
-                getActivity()})
+              })).then(()=>{
+                getActivity()}).catch((e)=>{
+                  console.error(e)
+                })
             }}>
               Complete
             </Button>

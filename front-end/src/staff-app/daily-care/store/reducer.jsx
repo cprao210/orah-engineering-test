@@ -5,7 +5,7 @@ const initialState={
     studentsArr:[]
 }
 
-const DailyActivityReducer=(state=initialState,payload={})=>{
+const StudentsList=(state=initialState,payload={})=>{
 
 switch (payload.type) {
     case actions.SET_NEW_STUDENT_ARR:
@@ -21,4 +21,4 @@ switch (payload.type) {
 
 }
 
-export {DailyActivityReducer}
+export {StudentsList}

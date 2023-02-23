@@ -12,12 +12,12 @@ interface Props {
 export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark",studentTracker, size = 40, onStateChange }) => {
   const [rollState, setRollState] = useState(initialState)
   
-  const arr=useSelector((state:any)=>(state.DailyActivityReducer))
+  const StudentsList=useSelector((state:any)=>(state.StudentsList))
 
   const dispatch= useDispatch()
 
   const findindex=()=>{
-    const index = arr.studentsArr.findIndex((d:any,i:any)=>{
+    const index = StudentsList.studentsArr.findIndex((d:any,i:any)=>{
       return d===studentTracker
     })
     return index;
@@ -33,9 +33,9 @@ export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark",stu
   const onClick = () => {
     const next = nextState()
     const index= findindex()
-    const newArr=arr.studentsArr;
+    const newArr=StudentsList.studentsArr;
     newArr.splice(index,1,{...studentTracker,rollState:next})
-    dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr,mark:'rollState'})
+    dispatch({type:actions.SET_NEW_STUDENT_ARR,data:newArr})
     setRollState(next)
     if (onStateChange) {
       onStateChange(next)
